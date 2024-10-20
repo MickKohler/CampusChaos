@@ -31,6 +31,10 @@ public class Move implements Command {
             return new CommandResult(CommandResultType.FAILURE, "Invalid move.");
         }
 
+        if (!isValidFigure(currentPlayer, getFigure(activeSession, commandArguments[0]))){
+            return new CommandResult(CommandResultType.FAILURE, "Invalid figure.");
+        }
+
         if (currentPlayer.isFigureOnObstacle()) {
             return new CommandResult(CommandResultType.FAILURE, "Cannot move figure because it is on an obstacle.");
         }
@@ -139,6 +143,11 @@ public class Move implements Command {
             }
         }
         return totalSteps == currentPlayer.getDiceRoll();
+    }
+
+    private boolean isValidFigure(Player currentPlayer, Figure figure) {
+        currentPlayer.setCurrentFigure(figure);
+        return currentPlayer.hasFigure(figure);
     }
 
     @Override

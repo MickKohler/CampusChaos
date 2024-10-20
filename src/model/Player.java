@@ -48,6 +48,7 @@ public class Player {
                 figuresOfBoard.add(figure);
                 figure.setPosition(startField);
                 figuresOnBoard.add(figure);
+            System.out.println(figure.getId().toUpperCase());
                 // TODO: hier bei Shaz sout(figure.getId) aber besser woanders machen
         }
 
@@ -191,6 +192,19 @@ public class Player {
      */
     public void resetCurrentFigure() {
         this.currentFigure = null;
+    }
+
+    /**
+     * Returns if the player has a figure on the board, that can make a valid move.
+     * @return if the player has a figure on the board that can make a valid move
+     */
+    public boolean canMakeValidMove() {
+        for (Figure figure : figures) {
+            if (figure.canMove(board, diceRoll)) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

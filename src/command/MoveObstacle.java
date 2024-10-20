@@ -40,7 +40,7 @@ public class MoveObstacle implements Command {
         }
         Session activeSession = SessionManager.getActiveSession();
         Player currentPlayer = activeSession.getCurrentPlayer();
-        Figure figure = currentPlayer.getCurrentFigure(); // TODO: Bug: figure is null -> when trying to move the figure, the figure is not recognized
+        Figure figure = currentPlayer.getCurrentFigure();// TODO: Bug: figure is null -> when trying to move the figure, the figure is not recognized
         Board currentBoard = activeSession.getBoard();
 
         if (figure == null) {

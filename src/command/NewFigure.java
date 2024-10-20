@@ -34,8 +34,8 @@ public class NewFigure implements Command {
         }
 
         currentPlayer.bringNewFigureIntoPlay();
-        Figure figure = currentPlayer.getFigures().getFirst();
-        return new CommandResult(CommandResultType.SUCCESS, figure.getId().toUpperCase());
+
+        return new CommandResult(CommandResultType.SUCCESS, null);
     }
 
     @Override

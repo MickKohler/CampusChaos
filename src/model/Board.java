@@ -13,9 +13,10 @@ public class Board {
     private static final char CHAR_FOREST = 'f';
     private static final char CHAR_ZONE = 'Z';
     private static final char CHAR_EMPTY = ' ';
+    private static final String HIT_FIGURE_FORMAT = "Player %s has hit Player %s.";
     private final List<String> linesOfGrid = new ArrayList<>();
     private List<Figure> figuresInForest = new ArrayList<>();
-    private Field[][] grid;
+    private static Field[][] grid;
     private Field[][] gridForReset;
 
 
@@ -118,12 +119,104 @@ public class Board {
         return !figuresInForest.isEmpty();
     }
 
-    public boolean isWithinBounds(Board board, Position position) {
+    public static boolean isWithinBounds(Board board, Position position) {
         return position.getRow() >= 0 && position.getRow() < board.getGrid().length && position.getColumn() >= 0 && position.getColumn() < board.getGrid()[0].length;
     }
 
+    public static boolean isTargetFieldValid(Board board, Position position, Player currentPlayer) {
+        Field targetField = getFieldAt(board, position);
+        if (!isWithinBounds(board, position) || targetField == null || targetField.isEmpty() || targetField.isForest()
+                || targetField.isStart()) {
+            return false;
+        }
+        if (targetField.isGeneralObstacle() || targetField.isTarget()) {
+            return true;
+        }
+        Figure occupyingFigure = targetField.getOccupyingFigure();
+        if (targetField.isZone()) {
+            return occupyingFigure == null;
+        }
+        if (targetField.isGeneralPathway()) {
+            if (occupyingFigure != null) {
+                if (occupyingFigure.getOwner().equals(currentPlayer)) {
+                    return false;
+                } else {
+                    if (targetField.isVillagePathway()) {
+                        board.moveFigureToForest(occupyingFigure);
+                    } else {
+                        board.moveFigureToStartPosition(occupyingFigure);
+                    }
+                    System.out.println(HIT_FIGURE_FORMAT.formatted(currentPlayer.getId().toUpperCase(), occupyingFigure.getOwner().getId().toUpperCase()));
+                    return true;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
-    public Field getFieldAt(Board board, Position position) {
+    /**
+     * Checks if a move is valid.
+     *
+     * @param board the board
+     * @param column the column
+     * @param row the row
+     * @return true if the move is valid, false otherwise
+     */
+    public static boolean isMoveValid(Board board, int column, int row) {
+        Position position = new Position(row, column);
+        Field targetField = getFieldAt(board, position);
+        return isWithinBounds(board, position) && targetField != null &&
+                !targetField.isEmpty() &&
+                !targetField.isGeneralObstacle();
+    }
+
+    /**
+     * Returns the adjacent fields of a field.
+     *
+     * @param board the board
+     * @param field the field
+     * @return the adjacent fields
+     */
+    public static List<Field> getAdjacentFields(Board board, Field field) {
+        List<Field> adjacentFields = new ArrayList<>();
+        int row = field.getPosition().getRow();
+        int column = field.getPosition().getColumn();
+
+        Position horizontalToLeft = new Position(row, column - 1);
+        if (Board.isWithinBounds(board, horizontalToLeft)) {
+            adjacentFields.add(getFieldAt(board,horizontalToLeft));
+        }
+
+        Position horizontalToRight = new Position(row, column + 1);
+        if (Board.isWithinBounds(board, horizontalToRight)) {
+            adjacentFields.add(getFieldAt(board,horizontalToRight));
+        }
+
+        Position verticalUp = new Position(row - 1, column);
+        if (Board.isWithinBounds(board, verticalUp)) {
+            adjacentFields.add(getFieldAt(board,verticalUp));
+        }
+
+        Position verticalDown = new Position(row + 1, column);
+        if (Board.isWithinBounds(board, verticalDown)) {
+            adjacentFields.add(getFieldAt(board,verticalDown));
+        }
+
+        return adjacentFields;
+
+    }
+
+    public void moveFigureToStartPosition(Figure occupyingFigure) {
+        if (occupyingFigure.getFieldPosition() != null) {
+            occupyingFigure.getFieldPosition().removeOccupyingFigure();
+        }
+
+        occupyingFigure.getOwner().removeFigureFromBoard(occupyingFigure);
+    }
+
+
+    public static Field getFieldAt(Board board, Position position) {
         if (isWithinBounds(board, position)) {
             return grid[position.getRow()][position.getColumn()];
         }

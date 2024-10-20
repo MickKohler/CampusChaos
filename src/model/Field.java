@@ -229,7 +229,8 @@ public class Field {
     public String toString(Player currentPlayer) {
         if (occupyingFigure != null) {
             if (occupyingFigure.getOwner().equals(currentPlayer)) {
-                return String.valueOf(currentPlayer.getId().charAt(1)); // to get number out of figure ID
+                String figureId = occupyingFigure.getId();
+                return figureId.replaceAll(REGEX, NOTHING); // to get number out of figure ID
             } else {
                 return occupyingFigure.getOwner().getId().toUpperCase();
             }
