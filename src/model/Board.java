@@ -156,7 +156,7 @@ public class Board {
     }
 
     /**
-     * Checks if a move is valid.
+     * Checks for a valid move.
      *
      * @param board the board
      * @param column the column
